@@ -51,7 +51,7 @@ const slidingWindowWordsToNumbers = (input) => {
 
         if (digit) {
             result += currentWindow.substring(0, currentWindow.length - digit.length) + digit.value
-            currentWindow = ""
+            currentWindow = char
         }
     })
 
