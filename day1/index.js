@@ -18,9 +18,22 @@ const main = async () => {
     const data = (await readInputAsText())
         .split('\n')
         .map(line => {
-            return line.split('')
+            return line
+                .split('')
                 .filter(char => Number.isInteger(+char))
-        }).map(numbers => +(numbers[0].toString() + numbers[numbers.length-1].toString()))
+        })
+        .map(numbers => {
+            console.log(numbers)
+            return numbers
+        })
+        .filter(numbers => numbers.length > 0)
+        .map(numbers => {
+            if (numbers.length === 1) {
+                return +(numbers[0] + numbers[0])
+            } else {
+                return +(numbers[0] + numbers[numbers.length-1])
+            }
+        })
         .reduce((prev, curr) => prev += curr, 0)
 
 
