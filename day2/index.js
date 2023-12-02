@@ -46,29 +46,14 @@ const parseGameData = (input) => {
 const main = async () => {
     const input = await readInputAsText()
     const games = parseGameData(input)
-    const goals = {
-        red: 12,
-        green: 13,
-        blue: 14
-    }
 
-    const validGames = games.map(game => {
-        let valid = true
-        for (const result of game.gameResults) {
-            valid = result.blue <= goals.blue && result.red <= goals.red && result.green <= goals.green
+    const score = games.map(game => {
+        const greenMin = Math.max(...game.gameResults.map(gr => gr.green))
+        const redMin = Math.max(...game.gameResults.map(gr => gr.red))
+        const blueMin = Math.max(...game.gameResults.map(gr => gr.blue))
 
-            if (!valid) {
-                break
-            }
-        }
-
-        return {game, valid}
-    })
-
-    const score = validGames
-        .filter(game => game.valid)
-        .map(game => game.game.gameId)
-        .reduce((prev, curr) => prev += curr, 0)
+        return greenMin * redMin * blueMin
+    }).reduce((prev, curr) => prev += curr, 0)
 
     console.log(score)
 }
