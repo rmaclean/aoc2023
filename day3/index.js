@@ -32,7 +32,7 @@ const main = async () => {
         for (let charIndex = 0; charIndex < chars.length; charIndex++) {
             const char = chars[charIndex];
             if (char.match(isSymbol)) {
-                symbols.push({char, lineIndex, charIndex})
+                symbols.push({ char, lineIndex, charIndex })
             }
         }
     }
@@ -69,34 +69,30 @@ const main = async () => {
         }
     }
 
-    const numbersWithTouchingSymbolInfo = numbers.map(number => {
-        let touchingSymbol = false
-        for (const symbol of symbols) {
-            if (symbol.lineIndex -1 === number.lineIndex ||
-                symbol.lineIndex === number.lineIndex ||
-                symbol.lineIndex + 1 === number.lineIndex) {
+    const result = symbols
+        .filter(s => s.char === '*')
+        .map(symbol => {
+            let touchingNumbers = []
+            for (const number of numbers) {
+                if (symbol.lineIndex - 1 === number.lineIndex ||
+                    symbol.lineIndex === number.lineIndex ||
+                    symbol.lineIndex + 1 === number.lineIndex) {
                     const lowerBound = number.startCharIndex - 1
                     const upperBound = number.endChatIndex + 1
 
-                    touchingSymbol = symbol.charIndex >= lowerBound && symbol.charIndex <= upperBound
+                    if (symbol.charIndex >= lowerBound && symbol.charIndex <= upperBound) {
+                        touchingNumbers.push(number.digit)
+                    }
                 }
-
-            if (touchingSymbol) {
-                break
             }
-        }
 
-        return {
-            ...number,
-            touchingSymbol
-        }
-    })
+            if (touchingNumbers.length === 2) {
+                return touchingNumbers[0] * touchingNumbers[1]
+            }
 
-    const result = numbersWithTouchingSymbolInfo
-        .filter(v => v.touchingSymbol)
-        .map(v => v.digit)
+            return 0
+        })
         .reduce((prev, curr) => prev += curr, 0)
-
 
     console.log(result)
 }
