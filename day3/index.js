@@ -14,7 +14,7 @@ const readInputAsText = async () => {
     }
 }
 
-const isSymbol = /[^\.|\d]/
+const isSymbol = /[^\.\d]/
 const isDigit = /\d/
 
 const main = async () => {
@@ -41,7 +41,8 @@ const main = async () => {
         const line = lines[lineIndex];
         const chars = line.split('')
         let currentDigits = ''
-        for (let charIndex = 0; charIndex < chars.length; charIndex++) {
+        let charIndex = 0
+        for (charIndex = 0; charIndex < chars.length; charIndex++) {
             const char = chars[charIndex];
             if (char.match(isDigit)) {
                 currentDigits += char
@@ -50,12 +51,21 @@ const main = async () => {
                     numbers.push({
                         digit: +currentDigits,
                         lineIndex,
-                        endChatIndex: charIndex,
+                        endChatIndex: charIndex - 1,
                         startCharIndex: charIndex - currentDigits.length
                     })
                     currentDigits = ''
                 }
             }
+        }
+
+        if (currentDigits) {
+            numbers.push({
+                digit: +currentDigits,
+                lineIndex,
+                endChatIndex: charIndex - 1,
+                startCharIndex: charIndex - currentDigits.length
+            })
         }
     }
 
@@ -78,7 +88,7 @@ const main = async () => {
 
         return {
             ...number,
-            touchingSymbol,
+            touchingSymbol
         }
     })
 
@@ -86,6 +96,7 @@ const main = async () => {
         .filter(v => v.touchingSymbol)
         .map(v => v.digit)
         .reduce((prev, curr) => prev += curr, 0)
+
 
     console.log(result)
 }
