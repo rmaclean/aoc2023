@@ -32,12 +32,13 @@ const numbersSetToArray = (numberSet) => {
 
 const main = async () => {
     const data = await readInputAsText()
-    const result = data.split('\n')
+    const cards = data.split('\n')
         .map(line => lineParser.exec(line)?.groups)
         .filter(info => info)
         .map(rawCardData => {
             return {
                 ...rawCardData,
+                instances: 1,
                 winning: numbersSetToArray(rawCardData.winningNumbers),
                 mine: numbersSetToArray(rawCardData.myNumbers)
             }
@@ -45,25 +46,34 @@ const main = async () => {
         .map(card => {
             return {
                 ...card,
-                winningNumbers: card.mine.filter(myNumber => card.winning.indexOf(myNumber) > -1),
-                points: card.mine.reduce((prev, curr) => {
-                    const winning = card.winning.indexOf(curr) > -1
-                    if (winning) {
-                        if (prev === 0) {
-                            prev = 1
-                        } else {
-                            prev *= 2
-                        }
-                    }
-
-                    return prev
-                }, 0)
+                winningNumbers: card.mine.filter(myNumber => card.winning.indexOf(myNumber) > -1).length,
             }
         })
-        .map(card => card.points)
-        .reduce((prev, curr) => prev + curr, 0)
 
-    console.log(result)
+    let index = 0
+    while (index < cards.length) {
+        const card = cards[index]
+        for (let instanceCount = 0; instanceCount < card.instances; instanceCount++) {
+
+            for (let nextCardOffset = 1; nextCardOffset < card.winningNumbers + 1; nextCardOffset++) {
+                const nextCardIndex = nextCardOffset + index
+                const nextCard = cards[nextCardIndex]
+                if (nextCard) {
+                    nextCard.instances++
+                }
+            }
+        }
+
+        index++
+    }
+
+    // console.log(cards)
+
+    const cardCount = cards
+        .map(card => card.instances)
+        .reduce((prev, curr) => prev += curr, 0)
+
+    console.log(cardCount)
 }
 
 main()
