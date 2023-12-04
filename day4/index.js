@@ -14,7 +14,7 @@ const readInputAsText = async () => {
     }
 }
 
-const lineParser = /(Card\s)(?<card>\d+)(:\s)(?<winningNumbers>(\d|\s)+)\|(?<myNumbers>(\d|\s)+)/
+const lineParser = /(Card\s+)(?<card>\d+)(:\s)(?<winningNumbers>(\d|\s)+)\|(?<myNumbers>(\d|\s)+)/
 
 /**
  *
@@ -22,8 +22,13 @@ const lineParser = /(Card\s)(?<card>\d+)(:\s)(?<winningNumbers>(\d|\s)+)\|(?<myN
  * @returns {Array<Number>}
  */
 const numbersSetToArray = (numberSet) => {
-    return numberSet.trim().split(' ').map(numeric => +numeric)
+    return numberSet
+        .trim()
+        .split(' ')
+        .filter(numeric => numeric)
+        .map(numeric => +numeric)
 }
+
 
 const main = async () => {
     const data = await readInputAsText()
@@ -40,6 +45,7 @@ const main = async () => {
         .map(card => {
             return {
                 ...card,
+                winningNumbers: card.mine.filter(myNumber => card.winning.indexOf(myNumber) > -1),
                 points: card.mine.reduce((prev, curr) => {
                     const winning = card.winning.indexOf(curr) > -1
                     if (winning) {
@@ -55,7 +61,7 @@ const main = async () => {
             }
         })
         .map(card => card.points)
-        .reduce((prev, curr) => prev += curr, 0)
+        .reduce((prev, curr) => prev + curr, 0)
 
     console.log(result)
 }
